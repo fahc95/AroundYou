@@ -1,0 +1,18 @@
+Buscar un lugar a través de un servicio Web; indicando uno o varios de los siguientes datos: el nombre del lugar, una dirección, ciudad, pueblo, entre otros.
+Mostrar el nombre y dirección del lugar encontrado.
+Mostrar al menos seis (6) fotos del lugar encontrado.
+Mostrar el horario de apertura y cierre del lugar encontrado, obteniendo la información del horario a través de un servicio Web.
+Mostrar la calificación o rating del lugar, obteniendo esta calificación desde un servicio Web.
+Mostrar la calificación o rating del lugar a través de imágenes o íconos; las porciones o decimales deben poderse observar gráficamente.
+Mostrar, al menos, cinco (5) comentarios del lugar indicado desplegando el comentario y los datos de la persona que lo generó.
+Mostrar el lugar encontrado en un mapa.
+Ofrecer al usuario la opción de buscar lugares cercanos al sitio deseado.
+Cuando el usuario busque lugares cercanos, mostrar al usuario una lista de, al menos, nueve(9) lugares cercanos.
+Para cada lugar cercano, mostrar el nombre del lugar, la calificación y, al menos, una (1) foto.
+Presentar al usuario la opción de mostrar más lugares cercanos.
+Desde cada lugar cercano, ofrecer la opción al usuario de seleccionar ese lugar como destino.
+Cuando el usuario cambie de destino desde los lugares cercanos, actualizar automáticamente la información del lugar destino (Nombre, Dirección, Calificación, Horario, Comentarios y Ubicación en el mapa).
+Permitir al usuario indicar un lugar de partida y medio de transporte (vehículo, transporte público, bicicleta o caminando), a utilizar para viajar al destino.
+Ofrecer al usuario la opción de ir al destino; en tal sentido, mostrar la ruta a utilizar, entre el origen y el destino, a través del medio de transporte indicado.
+Mostrar la ruta en un mapa.
+Mostrar en el mapa la información de la dirección de los lugares cuando se hace clic sobre los puntos de origen y destino.
