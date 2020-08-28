@@ -13,6 +13,39 @@
   }
 }
 
+#map {
+  width: 95vw;
+  height: 70vh;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  padding: 5px;
+}
+
+#title {
+  color: #fff;
+  background-color: #4d90fe;
+  font-size: 25px;
+  font-weight: 500;
+  padding: 6px 12px;
+}
+
+#infowindow-content .title {
+  font-weight: bold;
+}
+
+.controls {
+  width: 50vw;
+  padding: 10px 20px;
+  margin: 10px 0;
+  display: flex;
+  border: 1px solid transparent;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
