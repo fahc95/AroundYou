@@ -11,14 +11,31 @@
 }
 
 .selectedPlace {
-  flex-flow: row;
+  display: flex;
+  flex-direction: row;
+  flex-flow: wrap;
+  justify-content: center;
+  align-items: center;
   width: 95vw;
+  height: 500px;
 }
 
 .placePhoto {
   max-width: 400px !important;
   align-self: center;
+  margin-top: 1rem;
   margin-bottom: 1rem;
+}
+
+.slidePhoto {
+  height: 500px;
+  width: 100%;
+}
+
+.photoCarousel {
+  border: 1px solid transparent;
+  width: 40%;
+  margin: 1rem;
 }
 
 .placeCard {
@@ -26,6 +43,7 @@
   flex-flow: column;
   text-align: center;
   width: 25%;
+  height: 300px;
   border: 1px solid rgb(238, 238, 238);
 }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Place } from "./components";
+import { Place, PhotoCarousel } from "./components";
 import { Container } from "react-bootstrap";
 
 const google = window.google;
@@ -20,6 +20,7 @@ export default function App() {
   // const [placePhotos, setPlacePhotos] = useState([""]);
   const mapRef = useRef(map);
   let placesService;
+  let mainPhoto;
 
   // Gets users current location if allowed
   if (navigator.geolocation)
@@ -139,14 +140,15 @@ export default function App() {
     if (status === "OK") {
       results.map((result) => {
         let place_id = result.place_id;
+        mainPhoto = result.photos ? result.photos[0].getUrl() : "";
         if (place_id !== undefined) findePLaceDetail(place_id);
       });
     }
   };
 
-  const findePLaceDetail = (placeFound) => {
+  const findePLaceDetail = (place_id) => {
     const request = {
-      placeId: placeFound,
+      placeId: place_id,
       fields: [
         "address_component",
         "adr_address",
@@ -176,7 +178,10 @@ export default function App() {
       let placePhotos = [""];
       if (place.photos) {
         place.photos.map((placePhoto, index) => {
-          placePhotos[index] = placePhoto.getUrl();
+          placePhotos[index] = placePhoto.getUrl({
+            maxWidth: 800,
+            maxHeight: 600,
+          });
           if (index === 5) return;
         });
       }
@@ -184,7 +189,11 @@ export default function App() {
         id: place.place_id,
         name: place.name,
         address: place.formatted_address,
+        mainPhoto: mainPhoto,
         photos: placePhotos,
+        opening_hours: place.opening_hours,
+        rating: place.rating,
+        reviews: place.reviews,
       };
       setPlace(placeTemp);
       setPlaceLoaded(true);
@@ -221,6 +230,7 @@ export default function App() {
         className="selectedPlace"
       >
         <Place place={place} />
+        <PhotoCarousel placePhotos={place.photos} />
       </div>
     </Container>
   );
