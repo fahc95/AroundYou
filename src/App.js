@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Button } from "react-bootstrap";
 import { Place } from "./components";
+import { Container } from "react-bootstrap";
 
 const google = window.google;
+let map;
 const coordsBarcelona = {
   lat: 41.384747,
   lng: 2.176391,
@@ -13,10 +14,12 @@ const coordsBarcelona = {
 export default function App() {
   const [mapCenter, setCoords] = useState(coordsBarcelona);
   const [userMarker, setUserMarker] = useState(mapCenter);
-  const [query, setQuery] = useState("");
   const [place, setPlace] = useState({});
-  const [placePhotos, setPlacePhotos] = useState([""]);
-  let map;
+  const [placeLoaded, setPlaceLoaded] = useState(false);
+  const [queryString, setQueryString] = useState("");
+  // const [placePhotos, setPlacePhotos] = useState([""]);
+  const mapRef = useRef(map);
+  let placesService;
 
   // Gets users current location if allowed
   if (navigator.geolocation)
@@ -30,108 +33,181 @@ export default function App() {
 
   useEffect(() => {
     if (google) {
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: mapCenter,
-        zoom: 12,
-        disableDefaultUI: true,
-        zoomControl: true,
-      });
+      console.log("Places API Loaded");
+      if (mapRef.current === undefined) {
+        mapRef.current = new google.maps.Map(document.getElementById("map"), {
+          center: mapCenter,
+          zoom: 12,
+          disableDefaultUI: true,
+          zoomControl: true,
+        });
 
-      const input = document.getElementById("pac-input");
-      map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
-      const autocomplete = new google.maps.places.Autocomplete(input);
+        new google.maps.Marker({
+          position: userMarker,
+          map: mapRef.current,
+          draggable: true,
+        });
 
-      autocomplete.bindTo("bounds", map);
-      autocomplete.setFields([
-        "address_components",
-        "geometry",
-        "icon",
-        "name",
-      ]);
+        let searchBox = document.getElementById("searchBox");
+        let searchBtn = document.getElementById("searchBtn");
 
-      const infowindow = new google.maps.InfoWindow();
-      const infowindowContent = document.getElementById("infowindow-content");
-      infowindow.setContent(infowindowContent);
-      const marker = new google.maps.Marker({
-        map,
-        anchorPoint: new google.maps.Point(0, -29),
-      });
-      autocomplete.addListener("place_changed", () => {
-        infowindow.close();
-        marker.setVisible(false);
-        const place = autocomplete.getPlace();
-        console.log(place);
+        mapRef.current.controls[google.maps.ControlPosition.TOP_CENTER].push(
+          searchBox
+        );
+        mapRef.current.controls[google.maps.ControlPosition.TOP_CENTER].push(
+          searchBtn
+        );
 
-        if (!place.geometry) {
-          window.alert("No details available for input: '" + place.name + "'");
-          return;
-        }
+        let autocomplete = new google.maps.places.Autocomplete(searchBox);
 
-        // If the place has a geometry, then present it on a map.
-        if (place.geometry.viewport) {
-          map.fitBounds(place.geometry.viewport);
-        } else {
-          map.setCenter(place.geometry.location);
-          map.setZoom(17);
-        }
-        marker.setPosition(place.geometry.location);
-        marker.setVisible(true);
-        let address = "";
+        autocomplete.bindTo("bounds", mapRef.current);
+        autocomplete.setFields([
+          "address_components",
+          "geometry",
+          "icon",
+          "name",
+        ]);
 
-        if (place.address_components) {
-          address = [
-            (place.address_components[1] &&
-              place.address_components[1].long_name) ||
-              "",
-            (place.address_components[0] &&
-              place.address_components[0].long_name) ||
-              "",
-            (place.address_components[6] &&
-              place.address_components[6].long_name) ||
-              "",
-          ].join(" , ");
-        }
-        infowindowContent.children["place-icon"].src = place.icon;
-        infowindowContent.children["place-name"].textContent = place.name;
-        infowindowContent.children["place-address"].textContent = address;
-        infowindow.open(map, marker);
-        let placeQuery = document.getElementById("pac-input").value;
-        placeQuerySearch(placeQuery);
-      });
+        const infowindow = new google.maps.InfoWindow();
+        const infowindowContent = document.getElementById("infowindow-content");
+
+        infowindow.setContent(infowindowContent);
+
+        const marker = new google.maps.Marker({
+          map: mapRef.current,
+          anchorPoint: new google.maps.Point(0, -29),
+        });
+
+        autocomplete.addListener("place_changed", () => {
+          infowindow.close();
+          marker.setVisible(false);
+          const place = autocomplete.getPlace();
+
+          if (!place.geometry) {
+            window.alert(
+              "No details available for input: '" + place.name + "'"
+            );
+            return;
+          }
+
+          // If the place has a geometry, then present it on a map.
+          if (place.geometry.viewport) {
+            mapRef.current.fitBounds(place.geometry.viewport);
+          } else {
+            mapRef.current.setCenter(place.geometry.location);
+            mapRef.current.setZoom(17);
+          }
+
+          marker.setPosition(place.geometry.location);
+          marker.setVisible(true);
+          let address = "";
+
+          if (place.address_components) {
+            address = [
+              (place.address_components[1] &&
+                place.address_components[1].long_name) ||
+                "",
+              (place.address_components[0] &&
+                place.address_components[0].long_name) ||
+                "",
+              (place.address_components[6] &&
+                place.address_components[6].long_name) ||
+                "",
+            ].join(" , ");
+          }
+          infowindowContent.children["place-icon"].src = place.icon;
+          infowindowContent.children["place-name"].textContent = place.name;
+          infowindowContent.children["place-address"].textContent = address;
+          infowindow.open(mapRef.current, marker);
+          setQueryString(address);
+        });
+      }
     }
   });
 
-  const placeQuerySearch = (placeQuery) => {
+  const handleOnClick = () => {
     const request = {
-      query: placeQuery,
-      fields: ["name", "formatted_address", "geometry", "photos", "place_id"],
+      query: queryString,
+      fields: ["photos", "formatted_address", "name", "place_id"],
     };
-    let service = new google.maps.places.PlacesService(map);
-    service.findPlaceFromQuery(request, findPlace);
+    placesService = new google.maps.places.PlacesService(mapRef.current);
+    placesService.findPlaceFromQuery(request, findPlace);
+    console.log(place);
   };
 
   const findPlace = (results, status) => {
     if (status === "OK") {
-      results.map((place) => {
-        setPlace({
-          id: place.place_id,
-          name: place.name,
-          address: place.formatted_address,
-          geometry: place.geometry,
-        });
+      results.map((result) => {
+        let place_id = result.place_id;
+        if (place_id !== undefined) findePLaceDetail(place_id);
       });
     }
   };
 
+  const findePLaceDetail = (placeFound) => {
+    const request = {
+      placeId: placeFound,
+      fields: [
+        "address_component",
+        "adr_address",
+        "alt_id",
+        "formatted_address",
+        "icon",
+        "id",
+        "name",
+        "photo",
+        "place_id",
+        "plus_code",
+        "scope",
+        "type",
+        "url",
+        "vicinity",
+        "geometry",
+        "rating",
+        "reviews",
+        "opening_hours",
+      ],
+    };
+    placesService.getDetails(request, foundPlaceDetail);
+  };
+
+  const foundPlaceDetail = (place, status) => {
+    if (status === "OK") {
+      let placePhotos = [""];
+      if (place.photos) {
+        place.photos.map((placePhoto, index) => {
+          placePhotos[index] = placePhoto.getUrl();
+          if (index === 5) return;
+        });
+      }
+      const placeTemp = {
+        id: place.place_id,
+        name: place.name,
+        address: place.formatted_address,
+        photos: placePhotos,
+      };
+      setPlace(placeTemp);
+      setPlaceLoaded(true);
+    }
+  };
+
   return (
-    <div>
+    <Container fluid className="d-flex flex-column align-items-center">
       <div className="py-4 d-flex justify-content-center">
         <input
-          id="pac-input"
+          id="searchBox"
           className="controls"
           type="text"
           placeholder="Busca un lugar ..."
         />
+        <button
+          id="searchBtn"
+          className="btn btn-primary"
+          onClick={handleOnClick}
+          style={{ display: queryString === "" ? "none" : "" }}
+        >
+          Buscar
+        </button>
         <div id="map"></div>
         <div id="infowindow-content">
           <img src="" width="16" height="16" id="place-icon" />
@@ -140,7 +216,12 @@ export default function App() {
           <span id="place-address"></span>
         </div>
       </div>
-      <Place place={place} />
-    </div>
+      <div
+        style={{ display: !placeLoaded ? "none" : "" }}
+        className="selectedPlace"
+      >
+        <Place place={place} />
+      </div>
+    </Container>
   );
 }
