@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Place } from "./components";
+import { Container } from "react-bootstrap";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Place, PhotoCarousel } from "./components";
-import { Container } from "react-bootstrap";
 
 const google = window.google;
 let map;
@@ -120,7 +120,7 @@ export default function App() {
           infowindowContent.children["place-name"].textContent = place.name;
           infowindowContent.children["place-address"].textContent = address;
           infowindow.open(mapRef.current, marker);
-          setQueryString(address);
+          setQueryString(searchBox.value);
         });
       }
     }
@@ -133,7 +133,6 @@ export default function App() {
     };
     placesService = new google.maps.places.PlacesService(mapRef.current);
     placesService.findPlaceFromQuery(request, findPlace);
-    console.log(place);
   };
 
   const findPlace = (results, status) => {
@@ -178,10 +177,7 @@ export default function App() {
       let placePhotos = [""];
       if (place.photos) {
         place.photos.map((placePhoto, index) => {
-          placePhotos[index] = placePhoto.getUrl({
-            maxWidth: 800,
-            maxHeight: 600,
-          });
+          placePhotos[index] = placePhoto.getUrl();
           if (index === 5) return;
         });
       }
@@ -201,8 +197,13 @@ export default function App() {
   };
 
   return (
-    <Container fluid className="d-flex flex-column align-items-center">
-      <div className="py-4 d-flex justify-content-center">
+    <Container fluid className="py-4 mainContainer">
+      <div
+        className="mapContainer"
+        style={{
+          width: placeLoaded ? "65%" : "",
+        }}
+      >
         <input
           id="searchBox"
           className="controls"
@@ -215,7 +216,7 @@ export default function App() {
           onClick={handleOnClick}
           style={{ display: queryString === "" ? "none" : "" }}
         >
-          Buscar
+          Seleccionar Lugar
         </button>
         <div id="map"></div>
         <div id="infowindow-content">
@@ -226,11 +227,12 @@ export default function App() {
         </div>
       </div>
       <div
-        style={{ display: !placeLoaded ? "none" : "" }}
-        className="selectedPlace"
+        className="placeContainer"
+        style={{
+          display: !placeLoaded ? "none" : "",
+        }}
       >
         <Place place={place} />
-        <PhotoCarousel placePhotos={place.photos} />
       </div>
     </Container>
   );

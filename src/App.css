@@ -1,50 +1,50 @@
 .App {
   text-align: center;
 }
+.mainContainer {
+  max-width: 100vw;
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
 #map {
   width: 95vw;
-  height: 50vh;
+  height: 100%;
   border-bottom-left-radius: 25px;
   border-bottom-right-radius: 25px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 5px;
 }
 
-.selectedPlace {
+.mapContainer {
   display: flex;
-  flex-direction: row;
-  flex-flow: wrap;
   justify-content: center;
-  align-items: center;
-  width: 95vw;
-  height: 500px;
-}
-
-.placePhoto {
-  max-width: 400px !important;
-  align-self: center;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-.slidePhoto {
-  height: 500px;
   width: 100%;
+  height: 95vh;
+  transition: width ease-in-out 0.8s;
 }
 
-.photoCarousel {
-  border: 1px solid transparent;
-  width: 40%;
-  margin: 1rem;
-}
-
-.placeCard {
-  margin: 1rem;
+.placeContainer {
+  display: flex;
   flex-flow: column;
-  text-align: center;
-  width: 25%;
-  height: 300px;
-  border: 1px solid rgb(238, 238, 238);
+  align-content: center;
+  margin-left: 1rem;
+  padding-top: 100%;
+  width: 35%;
+  height: 95vh;
+  animation: slideUp 2s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from {
+    padding-top: 100%;
+    opacity: 0;
+  }
+  to {
+    padding-top: 0;
+    opacity: 1;
+  }
 }
 
 #title {

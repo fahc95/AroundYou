@@ -1,0 +1,29 @@
+.horario:after {
+  content: "\2BC6";
+  color: blue;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.horario {
+  background-color: transparent;
+}
+
+.active:after {
+  content: "\2BC5";
+}
+
+.placeCard {
+  flex-flow: column;
+  text-align: center;
+  height: 300px;
+  border: 1px solid rgb(238, 238, 238);
+}
+
+.placePhoto {
+  max-width: 400px !important;
+  align-self: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}

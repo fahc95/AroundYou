@@ -6,6 +6,8 @@ Mostrar la calificación o rating del lugar, obteniendo esta calificación desde
 Mostrar la calificación o rating del lugar a través de imágenes o íconos; las porciones o decimales deben poderse observar gráficamente.
 Mostrar, al menos, cinco (5) comentarios del lugar indicado desplegando el comentario y los datos de la persona que lo generó.
 Mostrar el lugar encontrado en un mapa.
+
+
 Ofrecer al usuario la opción de buscar lugares cercanos al sitio deseado.
 Cuando el usuario busque lugares cercanos, mostrar al usuario una lista de, al menos, nueve(9) lugares cercanos.
 Para cada lugar cercano, mostrar el nombre del lugar, la calificación y, al menos, una (1) foto.
