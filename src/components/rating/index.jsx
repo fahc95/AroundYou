@@ -33,32 +33,41 @@ export default function Rating({ rating }) {
   };
 
   useEffect(() => {
-    var canvas = document.getElementById("canvas");
-    canvas.width = 150;
-    canvas.height = 30;
-    const ctx = canvas.getContext("2d");
-    const initx = 15;
-    const stepPos = 30;
-    const completeStar = Math.floor(rating);
-    const partialStar = (rating - completeStar).toFixed(1);
-    for (let index = 0; index < completeStar; index++) {
-      drawStar(ctx, initx + stepPos * index, 12, 5, 10, 4.5, "skyblue");
-    }
-    const partialFill = rating - completeStar;
-    if (partialFill > 0) {
-      var gradient = ctx.createLinearGradient(
-        125.48943483704846,
-        2,
-        144.51056516295154,
-        2
-      );
-      gradient.addColorStop(0, "skyblue");
-      gradient.addColorStop(partialStar, "skyblue");
-      gradient.addColorStop(partialStar, "white");
-      gradient.addColorStop(1, "white");
-      drawStar(ctx, initx + stepPos * completeStar, 12, 5, 10, 4.5, gradient);
+    if (rating) {
+      var canvas = document.getElementById("canvas");
+      canvas.width = 150;
+      canvas.height = 30;
+      const ctx = canvas.getContext("2d");
+      const initx = 15;
+      const stepPos = 30;
+      const completeStar = Math.floor(rating);
+      const partialStar = (rating - completeStar).toFixed(1);
+      for (let index = 0; index < completeStar; index++) {
+        drawStar(ctx, initx + stepPos * index, 12, 5, 10, 4.5, "skyblue");
+      }
+      const partialFill = rating - completeStar;
+      if (partialFill > 0) {
+        var gradient = ctx.createLinearGradient(
+          125.48943483704846,
+          2,
+          144.51056516295154,
+          2
+        );
+        gradient.addColorStop(0, "skyblue");
+        gradient.addColorStop(partialStar, "skyblue");
+        gradient.addColorStop(partialStar, "white");
+        gradient.addColorStop(1, "white");
+        drawStar(ctx, initx + stepPos * completeStar, 12, 5, 10, 4.5, gradient);
+      }
     }
   });
+
+  if (rating === undefined)
+    return (
+      <div className="mt-2">
+        <i>No hay ratings para este lugar</i>
+      </div>
+    );
 
   const startRating = [];
   const completeStar = Math.floor(rating);
@@ -66,5 +75,12 @@ export default function Rating({ rating }) {
     startRating[index] = <span className="fa fa-star"></span>;
   }
 
-  return <canvas className="py-1" id="canvas"></canvas>;
+  return (
+    <div>
+      <div>
+        <strong>Rating: {rating} / 5</strong>
+      </div>
+      <canvas className="py-1" id="canvas"></canvas>
+    </div>
+  );
 }

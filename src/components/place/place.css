@@ -1,13 +1,24 @@
+.placeContainer {
+  display: flex;
+  flex-flow: column;
+  align-content: center;
+  margin-left: 1rem;
+  padding-top: 100%;
+  width: 30%;
+  height: 95vh;
+  animation: slideUp 2s ease-out forwards;
+}
+
+.horario {
+  background-color: transparent;
+}
+
 .horario:after {
   content: "\2BC6";
   color: blue;
   font-weight: bold;
   float: right;
   margin-left: 5px;
-}
-
-.horario {
-  background-color: transparent;
 }
 
 .active:after {

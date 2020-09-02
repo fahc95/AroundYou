@@ -1,9 +1,14 @@
 import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Accordion, Card } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Hours({ openingHours }) {
-  if (openingHours === undefined) return "";
+  if (openingHours === undefined)
+    return (
+      <div>
+        <i>No hay horarios para este lugar</i>
+      </div>
+    );
   return (
     <Accordion defaultActiveKey="0">
       <Card>

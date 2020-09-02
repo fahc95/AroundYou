@@ -1,0 +1,21 @@
+.commentCardBody {
+  display: flex;
+  flex-flow: row;
+  padding: 0.5rem;
+  border-bottom-width: 65%;
+  border-bottom: 1px solid rgb(61, 61, 61);
+}
+
+.userPhoto {
+  padding: 0.5rem;
+}
+
+.comment {
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.commentCardBody > div > img {
+  width: 45px;
+  height: 45px;
+}

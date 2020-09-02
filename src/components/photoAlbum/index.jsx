@@ -9,12 +9,12 @@ export default function PhotoCarousel({ placePhotos, setMainPhoto }) {
       {placePhotos.slice(0, 6).map((photo, index) => (
         <div
           key={index}
-          className="btn p-0 my-1"
+          className="btn p-0 my-1 photo "
           onClick={() => {
             setMainPhoto(photo);
           }}
         >
-          <img src={photo} width={160} height={100} />
+          <img src={photo} width={120} height={100} />
         </div>
       ))}
     </div>

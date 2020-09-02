@@ -1,64 +1,56 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Place } from "./components";
-import { Container } from "react-bootstrap";
+import { Place, GoogleMap, NearbyPlaces } from "./components";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const google = window.google;
 let map;
+const google = window.google;
 const coordsBarcelona = {
   lat: 41.384747,
   lng: 2.176391,
 };
 
 export default function App() {
-  const [mapCenter, setCoords] = useState(coordsBarcelona);
-  const [userMarker, setUserMarker] = useState(mapCenter);
-  const [place, setPlace] = useState({});
+  const [mapCenter, setMapCenter] = useState(coordsBarcelona);
+  const [userLocation, setuserLocation] = useState();
+  const [destination, setDestination] = useState();
+  const [place, setPlace] = useState();
+  const [nearbyPlaces, setNearbyPlaces] = useState();
   const [placeLoaded, setPlaceLoaded] = useState(false);
   const [queryString, setQueryString] = useState("");
-  // const [placePhotos, setPlacePhotos] = useState([""]);
   const mapRef = useRef(map);
   let placesService;
   let mainPhoto;
 
-  // Gets users current location if allowed
-  if (navigator.geolocation)
-    navigator.geolocation.getCurrentPosition((position) => {
-      setCoords({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      });
-      setUserMarker(mapCenter);
-    });
-
   useEffect(() => {
+    // Gets users current location if allowed
+    if (navigator.geolocation)
+      navigator.geolocation.getCurrentPosition((position) => {
+        setMapCenter({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+        setuserLocation(mapCenter);
+      });
+
     if (google) {
       console.log("Places API Loaded");
+
       if (mapRef.current === undefined) {
         mapRef.current = new google.maps.Map(document.getElementById("map"), {
-          center: mapCenter,
+          center: userLocation ? userLocation : mapCenter,
           zoom: 12,
           disableDefaultUI: true,
           zoomControl: true,
         });
 
         new google.maps.Marker({
-          position: userMarker,
+          position: userLocation ? userLocation : mapCenter,
           map: mapRef.current,
           draggable: true,
         });
 
         let searchBox = document.getElementById("searchBox");
-        let searchBtn = document.getElementById("searchBtn");
-
-        mapRef.current.controls[google.maps.ControlPosition.TOP_CENTER].push(
-          searchBox
-        );
-        mapRef.current.controls[google.maps.ControlPosition.TOP_CENTER].push(
-          searchBtn
-        );
-
         let autocomplete = new google.maps.places.Autocomplete(searchBox);
 
         autocomplete.bindTo("bounds", mapRef.current);
@@ -99,6 +91,7 @@ export default function App() {
             mapRef.current.setZoom(17);
           }
 
+          setDestination(place.geometry.location);
           marker.setPosition(place.geometry.location);
           marker.setVisible(true);
           let address = "";
@@ -126,13 +119,31 @@ export default function App() {
     }
   });
 
-  const handleOnClick = () => {
-    const request = {
+  const handleOnClickSelectPlace = () => {
+    const requestFindPlace = {
       query: queryString,
-      fields: ["photos", "formatted_address", "name", "place_id"],
+      fields: ["photos", "place_id"],
     };
+
+    const requestNearbyPlaces = {
+      location: destination,
+      radius: "500",
+      openNow: true,
+    };
+
     placesService = new google.maps.places.PlacesService(mapRef.current);
-    placesService.findPlaceFromQuery(request, findPlace);
+    placesService.findPlaceFromQuery(requestFindPlace, findPlace);
+    placesService.nearbySearch(requestNearbyPlaces, searchNearbyPlaces);
+  };
+
+  const searchNearbyPlaces = (results, status) => {
+    const nearbyPlacesTemp = [];
+    if (status === "OK") {
+      results.map((result) => {
+        nearbyPlacesTemp.push(result);
+      });
+    }
+    setNearbyPlaces(nearbyPlacesTemp);
   };
 
   const findPlace = (results, status) => {
@@ -178,7 +189,6 @@ export default function App() {
       if (place.photos) {
         place.photos.map((placePhoto, index) => {
           placePhotos[index] = placePhoto.getUrl();
-          if (index === 5) return;
         });
       }
       const placeTemp = {
@@ -197,43 +207,24 @@ export default function App() {
   };
 
   return (
-    <Container fluid className="py-4 mainContainer">
+    <div className="mainContainer pt-3">
       <div
-        className="mapContainer"
+        className="map_NearbyPlacesContainer px-2"
         style={{
-          width: placeLoaded ? "65%" : "",
+          width: placeLoaded ? "70%" : "98%",
         }}
       >
-        <input
-          id="searchBox"
-          className="controls"
-          type="text"
-          placeholder="Busca un lugar ..."
+        <GoogleMap
+          placeLoaded={placeLoaded}
+          handleOnClick={handleOnClickSelectPlace}
+          queryString={queryString}
         />
-        <button
-          id="searchBtn"
-          className="btn btn-primary"
-          onClick={handleOnClick}
-          style={{ display: queryString === "" ? "none" : "" }}
-        >
-          Seleccionar Lugar
-        </button>
-        <div id="map"></div>
-        <div id="infowindow-content">
-          <img src="" width="16" height="16" id="place-icon" />
-          <span id="place-name" className="title"></span>
-          <br />
-          <span id="place-address"></span>
-        </div>
+        <NearbyPlaces
+          nearbyPlaces={nearbyPlaces}
+          handleOnClick={handleOnClickSelectPlace}
+        />
       </div>
-      <div
-        className="placeContainer"
-        style={{
-          display: !placeLoaded ? "none" : "",
-        }}
-      >
-        <Place place={place} />
-      </div>
-    </Container>
+      <Place place={place} placeLoaded={placeLoaded} />
+    </div>
   );
 }
